@@ -7,3 +7,4 @@ coverage/
 *.tgz
 .nyc_output
 .cache/
+/.diren
