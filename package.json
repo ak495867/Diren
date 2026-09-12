@@ -1,6 +1,6 @@
 {
   "name": "diren",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Local context caching tool to reduce AI API costs by up to 10x with advanced compression",
   "main": "dist/index.js",
   "bin": {
@@ -72,10 +72,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/diren-ai/diren.git"
+    "url": "https://github.com/ak495867/diren.git"
   },
-  "homepage": "https://github.com/diren-ai/diren#readme",
+  "homepage": "https://github.com/ak495867/diren#readme",
   "bugs": {
-    "url": "https://github.com/diren-ai/diren/issues"
+    "url": "https://github.com/ak495867/diren/issues"
   }
 }

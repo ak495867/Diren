@@ -16,6 +16,7 @@ program
   .command('start')
   .description('Start the Diren proxy server with web dashboard')
   .option('-p, --port <port>', 'Port to run server on', '3000')
+  .option('--dashboard', 'Start with web dashboard (default)')
   .option('--no-dashboard', 'Start without web dashboard')
   .action(async (options) => {
     const port = parseInt(options.port);
