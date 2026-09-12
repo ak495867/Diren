@@ -151,7 +151,7 @@ const response = await fetch('http://localhost:3000/v1/smart/chat/completions', 
 
 ```bash
 # Clone the repository
-git clone https://github.com/diren-ai/diren.git
+git clone https://github.com/ak495867/diren.git
 cd diren
 
 # Install dependencies
