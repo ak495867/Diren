@@ -195,17 +195,53 @@ program
   .action((options) => {
     const url = `http://localhost:${options.port}/dashboard`;
     console.log(`🌐 Opening dashboard: ${url}`);
-    
+
     // Try to open in browser (platform-specific)
     const { exec } = require('child_process');
-    const command = process.platform === 'win32' ? 'start' : 
+    const command = process.platform === 'win32' ? 'start' :
                    process.platform === 'darwin' ? 'open' : 'xdg-open';
-    
+
     exec(`${command} ${url}`, (error: any) => {
       if (error) {
         console.log('Please open the URL manually in your browser.');
       }
     });
+  });
+
+program
+  .command('providers')
+  .description('List available providers and their configuration status')
+  .option('--all', 'Show all providers including disabled ones')
+  .action(async (options) => {
+    const configManager = new ConfigManager();
+    const providers = await configManager.getAllProviders();
+
+    console.log('\n🔌 Supported Providers:');
+    console.log('=======================');
+
+    const categories = {
+      'Major Commercial': ['openai', 'anthropic', 'google', 'groq'],
+      'Coding Tools': ['cursor', 'continue-dev'],
+      'Local/Open Source': ['ollama', 'llama-cpp'],
+      'Router Services': ['openrouter', 'tokenrouter'],
+      'Other Commercial Providers': ['perplexity', 'deepseek', 'azure-openai', 'grok-x', 'alibaba-dashscope']
+    };
+
+    Object.entries(categories).forEach(([category, providerList]) => {
+      console.log(`\n${category}:`);
+      providerList.forEach(name => {
+        if (providers[name]) {
+          const config = providers[name];
+          const status = config.enabled && config.apiKey ? '✅' : '⚪';
+          const hasKey = config.apiKey ? '🔑' : '❌';
+          const cost = config.costPer1kTokens || 0;
+          console.log(`  ${status} ${hasKey} ${name.padEnd(15)} $${cost.toFixed(4)}/1K tokens`);
+        }
+      });
+    });
+
+    console.log('\n💡 Configure providers with: diren config set <provider> --key <your-key>');
+    console.log('📊 View in dashboard: http://localhost:3000/dashboard');
   });
 
 program

@@ -6,10 +6,12 @@ import { Analytics } from '../analytics/Analytics';
 import { Logger } from '../utils/Logger';
 import { ProviderDetector } from '../utils/ProviderDetector';
 import { ModelPool, RoutingRequest } from '../intelligence/ModelPool';
+import { FastMemoryStore } from '../intelligence/FastMemoryStore';
 
 export class ProxyHandler {
   private logger: Logger;
   private modelPool: ModelPool;
+  private fastMemory: FastMemoryStore;
 
   constructor(
     private cacheManager: CacheManager,
@@ -18,6 +20,7 @@ export class ProxyHandler {
   ) {
     this.logger = Logger.getInstance();
     this.modelPool = ModelPool.getInstance();
+    this.fastMemory = FastMemoryStore.getInstance();
   }
 
   public async handleUniversal(req: Request, res: Response): Promise<void> {
@@ -37,16 +40,16 @@ export class ProxyHandler {
 
   private async handleSmartRequest(req: Request, res: Response): Promise<void> {
     const startTime = Date.now();
-    
+
     try {
       // Extract request text for analysis
-      const requestText = this.extractRequestText(req.body);
-      
+      const smartRequestText = this.extractRequestText(req.body);
+
       // Create routing request
       const routingRequest: RoutingRequest = {
-        text: requestText,
-        intent: this.extractIntent(requestText),
-        complexity: this.calculateComplexity(requestText),
+        text: smartRequestText,
+        intent: this.extractIntent(smartRequestText),
+        complexity: this.calculateComplexity(smartRequestText),
         maxTokens: req.body.max_tokens,
         maxCost: parseFloat(req.headers['x-diren-max-cost'] as string) || undefined,
         maxLatency: parseInt(req.headers['x-diren-max-latency'] as string) || undefined,
@@ -57,7 +60,7 @@ export class ProxyHandler {
       // Route to best model
       const routing = await this.modelPool.routeRequest(routingRequest);
       const selectedProvider = routing.selectedModel.provider;
-      
+
       this.logger.info(`Smart routing selected ${selectedProvider}:${routing.selectedModel.model}`, {
         confidence: routing.confidence,
         estimatedCost: routing.estimatedCost,
@@ -75,17 +78,17 @@ export class ProxyHandler {
 
       // Handle request with selected provider
       await this.handleRequest(req, res, selectedProvider);
-      
+
       // Update model performance metrics
       const responseTime = Date.now() - startTime;
       this.modelPool.updateModelPerformance(selectedProvider, routing.selectedModel.model, {
         latency: responseTime,
         success: res.statusCode < 400
       });
-      
+
     } catch (error: any) {
       this.logger.error('Smart routing failed, falling back to default', error);
-      
+
       // Fallback to default provider
       const fallbackProvider = ProviderDetector.detectProvider(req.url, req.headers, req.body);
       await this.handleRequest(req, res, fallbackProvider);
@@ -129,46 +132,46 @@ export class ProxyHandler {
   }
 
   private async handleRequest(
-    req: Request, 
-    res: Response, 
+    req: Request,
+    res: Response,
     provider: string
   ): Promise<void> {
     const startTime = Date.now();
-    
+
     try {
       // Extract request text for enhanced caching
       const requestText = this.extractRequestText(req.body);
-      
+
       const requestHash = this.cacheManager.generateRequestHash(req.body);
       const contextHash = this.cacheManager.generateContextHash(req.body);
       const semanticHash = this.cacheManager.generateSemanticHash(req.body);
-      
+
       this.logger.debug(`Cache lookup for ${provider}`, { requestHash, contextHash, semanticHash });
-      
+
       // Enhanced cache lookup with semantic scoring
       const cacheResult = await this.cacheManager.findCachedResponse(
-        requestHash, 
-        contextHash, 
+        requestHash,
+        contextHash,
         semanticHash,
         requestText
       );
-      
+
       if (cacheResult) {
         await this.cacheManager.updateUsage(cacheResult.entry.id);
         this.analytics.recordCacheHit(provider, cacheResult.entry.cost);
-        
+
         const response = JSON.parse(cacheResult.entry.response);
-        
+
         this.logger.request(req.method, req.url, provider, true);
-        this.logger.debug(`Cache ${cacheResult.source} hit for ${provider}`, { 
-          entryId: cacheResult.entry.id, 
+        this.logger.debug(`Cache ${cacheResult.source} hit for ${provider}`, {
+          entryId: cacheResult.entry.id,
           similarity: cacheResult.similarity,
           confidence: cacheResult.confidence,
           retrievalTime: cacheResult.retrievalTimeMs,
           useCount: cacheResult.entry.useCount + 1,
           compressionRatio: cacheResult.entry.compressionRatio
         });
-        
+
         // Add cache info to response headers
         res.set({
           'X-Diren-Cache': 'HIT',
@@ -177,7 +180,7 @@ export class ProxyHandler {
           'X-Diren-Cache-Confidence': cacheResult.confidence.toString(),
           'X-Diren-Retrieval-Time': `${cacheResult.retrievalTimeMs}ms`
         });
-        
+
         res.json(response);
         return;
       }
@@ -185,7 +188,7 @@ export class ProxyHandler {
       // Get provider configuration
       const providerConfig = await this.configManager.getProviderConfig(provider);
       if (!providerConfig || !providerConfig.apiKey) {
-        res.status(401).json({ 
+        res.status(401).json({
           error: `No API key configured for ${provider}. Configure it in the dashboard at http://localhost:3000/dashboard`,
           provider: provider,
           configureUrl: `http://localhost:3000/dashboard`
@@ -194,7 +197,7 @@ export class ProxyHandler {
       }
 
       if (!providerConfig.enabled) {
-        res.status(403).json({ 
+        res.status(403).json({
           error: `Provider ${provider} is disabled. Enable it in the dashboard.`,
           provider: provider
         });
@@ -212,22 +215,31 @@ export class ProxyHandler {
       // Make API request with timeout and retry logic
       const apiResponse = await this.makeApiRequest(apiUrl, requestBody, headers);
       const responseData = apiResponse.data;
-      
+
       // Calculate tokens and cost
       const tokens = this.extractTokenCount(responseData, provider);
       const cost = this.calculateCost(tokens, providerConfig);
 
       // Enhanced cache storage with semantic analysis
-      await this.cacheManager.saveResponse(
-        provider,
-        requestHash,
-        contextHash,
-        semanticHash,
-        req.body,
-        responseData,
-        tokens,
-        cost
-      );
+      // Store in fast memory for semantic search
+      const fastMemory = FastMemoryStore.getInstance();
+      if (requestText) {
+        const memoryId = `${provider}:${requestHash}`;
+        fastMemory.store(memoryId, requestText, {
+          request: req.body,
+          response: responseData,
+          provider,
+          model: req.body?.model || 'unknown',
+          tokens,
+          cost
+        }, {
+          provider,
+          model: req.body?.model || 'unknown',
+          tags: [provider, this.extractIntent(requestText)],
+          cost,
+          tokens
+        });
+      }
 
       this.analytics.recordApiCall(provider, cost);
       
@@ -418,7 +430,7 @@ export class ProxyHandler {
         return await axios.post(url, body, {
           headers: config.headers,
           timeout: config.timeout,
-          validateStatus: (status) => status < 500 || status === 503 // Don't retry on 4xx errors
+          validateStatus: (status) => status < 500 // Don't treat 5xx (including 503) as success
         });
       } catch (error: any) {
         const isLastAttempt = attempt === config.maxRetries;
@@ -535,7 +547,8 @@ export class ProxyHandler {
       'database', 'api', 'framework', 'library', 'deployment', 'authentication',
       'optimization', 'performance', 'scalability', 'architecture', 'infrastructure'
     ];
-    
+
     const lowercaseText = text.toLowerCase();
     return technicalTerms.filter(term => lowercaseText.includes(term)).length;
-  }}
+  }
+}

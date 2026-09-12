@@ -7,13 +7,24 @@ describe('Analytics', () => {
   let testDataPath: string;
 
   beforeEach(() => {
-    // Setup test data directory
-    const testDir = path.join(__dirname, '../../test-data/.diren');
-    if (!fs.existsSync(testDir)) {
-      fs.mkdirSync(testDir, { recursive: true });
+    // Use separate test data directory
+    testDataPath = path.join(__dirname, '../../test-data/.diren');
+    if (!fs.existsSync(testDataDir)) {
+      fs.mkdirSync(testDataDir, { recursive: true });
     }
-    
+
+    // Clear analytics file between tests
+    const analyticsPath = path.join(testDataDir, 'analytics.json');
+    if (fs.existsSync(analyticsPath)) {
+      fs.unlinkSync(analyticsPath);
+    }
+
+    // Temporarily override home dir for this test
+    const originalHome = process.env.HOME;
+    process.env.HOME = path.dirname(testDataDir);
+
     analytics = new Analytics();
+    process.env.HOME = originalHome;
   });
 
   afterEach(() => {

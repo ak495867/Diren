@@ -84,6 +84,7 @@ export class CacheManager {
           cost REAL DEFAULT 0,
           compression_ratio REAL DEFAULT 0,
           quality_score REAL DEFAULT 0,
+          semantic_vector BLOB,
           created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
           last_used DATETIME DEFAULT CURRENT_TIMESTAMP,
           use_count INTEGER DEFAULT 1
@@ -96,13 +97,13 @@ export class CacheManager {
           return;
         }
 
-        // Now check if quality_score column exists by trying to query it
-        const checkColumnSql = `SELECT quality_score FROM cache_entries LIMIT 1`;
+        // Check if semantic_vector column exists by trying to query it
+        const checkColumnSql = `SELECT semantic_vector FROM cache_entries LIMIT 1`;
 
         this.db!.get(checkColumnSql, [], (err, row) => {
-          if (err && err.message && err.message.includes('no such column: quality_score')) {
+          if (err && err.message && err.message.includes('no such column: semantic_vector')) {
             // Column doesn't exist - add it with ALTER TABLE
-            const alterSql = `ALTER TABLE cache_entries ADD COLUMN quality_score REAL DEFAULT 0`;
+            const alterSql = `ALTER TABLE cache_entries ADD COLUMN semantic_vector BLOB`;
 
             this.db!.exec(alterSql, (err2) => {
               if (err2) {
@@ -311,7 +312,8 @@ export class CacheManager {
     request: any,
     response: any,
     tokens: number = 0,
-    cost: number = 0
+    cost: number = 0,
+    requestText?: string
   ): Promise<void> {
     return new Promise((resolve, reject) => {
       const id = crypto.randomUUID();
@@ -337,11 +339,24 @@ export class CacheManager {
       }
 
       const qualityScore = this.calculateResponseQuality(response, tokens, cost);
+      let semanticVector: SemanticVector | undefined = undefined;
+
+      // Extract semantic vector for potential semantic matching
+      let semanticText = requestText;
+      if (!semanticText) {
+        semanticText = this.extractTextFromRequest(request);
+      }
+      if (semanticText) {
+        semanticVector = this.semanticScorer.extractSemanticVector(semanticText);
+      }
+
+      // Convert semantic vector to JSON for storage
+      const semanticVectorJson = semanticVector ? JSON.stringify(semanticVector) : null;
 
       const sql = `
         INSERT INTO cache_entries
-        (id, provider, request_hash, context_hash, semantic_hash, request, response, compressed_response, tokens, cost, compression_ratio, quality_score)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        (id, provider, request_hash, context_hash, semantic_hash, request, response, compressed_response, tokens, cost, compression_ratio, quality_score, semantic_vector)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `;
 
       this.db!.run(sql, [
@@ -356,7 +371,8 @@ export class CacheManager {
         tokens,
         cost,
         compressionRatio,
-        qualityScore
+        qualityScore,
+        semanticVectorJson
       ], (err) => {
         if (err) reject(err);
         else resolve();
@@ -474,7 +490,7 @@ export class CacheManager {
 
         for (const row of rows) {
           const entry = this.rowToCacheEntry(row);
-          if (!entry.semanticVector) continue;
+          if (!entry.semanticVector) continue; // This will always be true since semantic_vector column doesn't exist
 
           const score = this.semanticScorer.calculateSimilarity(queryVector, entry.semanticVector);
 

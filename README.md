@@ -1,278 +1,345 @@
-# Diren - Advanced AI API Cost Optimizer with Intelligence
+# Diren - AI API Cost Optimizer
 
-An open-source tool that reduces AI API costs by up to 10x through intelligent context caching, semantic scoring, fast memory retrieval, and smart model pooling.
+## What is Diren?
 
-##  Features
+Diren is a super-smart tool that helps you save money on AI API costs! Think of it as your personal AI cost-cutting assistant that makes your AI requests go further while keeping everything fast and simple.
 
-- ** AI Intelligence**: Semantic scoring with 90%+ cache hit rates through deep content understanding
-- ** Fast Memory Retrieval**: Sub-millisecond response times with intelligent indexing and search
-- ** Smart Model Pooling**: Automatic routing to optimal models based on content, cost, and quality preferences  
-- ** Advanced Compression**: 90%+ storage reduction with intelligent gzip compression
-- ** Web Dashboard**: Beautiful local interface for configuration, monitoring, and analytics
-- ** Universal Provider Support**: 20+ providers including OpenAI, Anthropic, Groq, local models, and more
-- ** One-Click Tool Setup**: Auto-configure Claude CLI, Cursor, and other coding tools instantly
-- ** Real-time Analytics**: Live cost tracking, performance insights, and intelligent recommendations
+**Mission**: Make AI cheaper, faster, and smarter for everyone!
 
-##  AI Intelligence Features
+## 🎯 What It Does
 
-### Semantic Caching Levels
-1. **Exact Match** (100% hit rate) - Identical requests
-2. **Semantic Match** (85-95% hit rate) - Similar meaning, different wording  
-3. **Contextual Match** (70-85% hit rate) - Related conversation context
-4. **Memory Search** (60-80% hit rate) - Fast in-memory semantic lookup
+Diren acts like a clever middleman between you and AI services like OpenAI, Anthropic, and others. Instead of paying full price for every AI request, Diren:
 
-### Smart Model Routing
-- **Intent Detection**: Automatically detect request purpose (code, analysis, chat, etc.)
-- **Complexity Analysis**: Assess request difficulty and route to appropriate model tier
-- **Cost Optimization**: Balance quality, speed, and cost based on preferences
-- **Performance Learning**: Continuously improve routing based on real usage data
+1. **Remembers previous requests** - Like a smart friend who doesn't forget
+2. **Understands what you're asking** - Goes beyond just matching words to understanding meaning
+3. **Finds the best, cheapest AI model** - Chooses the perfect AI for each task
+4. **Serves you the results** - Super fast, whether from memory or live API
 
-### Fast Memory Store
-- **Semantic Indexing**: Multi-dimensional indexing by intent, entities, keywords
-- **Sub-ms Retrieval**: Lightning-fast searches with intelligent candidate filtering
-- **Adaptive Eviction**: Smart memory management based on usage patterns
-- **Compression**: 77% average space savings with intelligent compression
+**Real impact**: Saves up to 90% on AI API costs while maintaining quality!
 
-##  How It Saves Money
+## 🚀 Quick Start (Kid-Friendly Version)
 
-Diren uses advanced AI to understand your requests and optimize every aspect of API usage:
+### 1. Install Diren (Super Easy!)
 
-### Intelligent Caching Strategies
-- **Exact matches**: Same request = instant cached response (100% savings)
-- **Semantic similarity**: AI understands meaning beyond exact words (85-95% savings)  
-- **Contextual awareness**: Related conversation threads share cached insights (70-85% savings)
-- **Intent-based matching**: Similar purposes reuse relevant cached responses (60-80% savings)
-- **Fast memory**: Sub-millisecond retrieval from intelligent in-memory store
-
-### Smart Model Selection  
-- **Cost optimization**: Automatically choose the most cost-effective model for each task
-- **Quality balancing**: Route complex tasks to capable models, simple tasks to efficient ones
-- **Speed optimization**: Use fast models when latency matters more than perfection
-- **Capability matching**: Match specialized models (coding, analysis, etc.) to appropriate tasks
-
-### Advanced Compression
-- **90%+ storage reduction** with intelligent gzip compression and deduplication
-- **Semantic deduplication**: Avoid storing similar responses multiple times
-- **Adaptive compression**: Higher compression for larger, less frequently accessed responses
-
-##  Quick Start
-
-### Installation
 ```bash
+# Download and install (works on Mac, Windows, Linux)
 npm install -g diren
 ```
 
-### Setup API Keys
+### 2. Add Your AI API Keys
+
 ```bash
-# Configure your providers
+# Tell Diren about your favorite AI services
 diren config set openai --key sk-your-openai-key
 diren config set anthropic --key sk-ant-your-anthropic-key
 diren config set groq --key gsk-your-groq-key
 ```
 
-### Start the Server & Dashboard
+### 3. Start the Magic Server
+
 ```bash
+# Start Diren with the cool dashboard
 diren start --port 3000 --dashboard
 ```
 
-Open your browser to `http://localhost:3000/dashboard` for the web interface.
+### 4. Watch It Work
 
-### One-Click Tool Configuration
-Configure popular coding tools instantly:
+Open your browser to: `http://localhost:3000/dashboard`
 
-```bash
-# Auto-configure Claude CLI
-diren tools configure claude-cli
+You'll see a beautiful dashboard showing:
+- **Money saved** 💰
+- **Requests made** 📊  
+- **Cache hits** 🎯
+- **Provider status** 🔌
 
-# Auto-configure Cursor IDE
-diren tools configure cursor
+## 🌟 How It Saves Money (Simple Explanation)
 
-# View all supported tools
-diren tools list
-```
+### Super Smart Caching
 
-### Smart AI Routing (New!)
-Use intelligent model selection for optimal cost and quality:
+Imagine Diren is like a brilliant library:
+
+- **Exact matches**: Same question = instant answer from cache (100% savings!)
+- **Semantic matches**: Similar meaning, different words = still gets cached (85-95% savings)
+- **Contextual matches**: Related conversation topics = smart caching (70-85% savings)
+- **Memory search**: Lightning-fast searches through all your past interactions
+
+### Smart Model Selection
+
+Diren automatically picks the best AI model:
+
+- **Complex tasks** → Powerful, capable AI (costs more)
+- **Simple tasks** → Efficient, cheaper AI (costs less)
+- **Speed matters** → Fast responses over perfect ones
+- **Code tasks** → Specialized AI for programming
+
+### Compression Magic
+
+Diren squeezes responses to save space:
+- Stores large responses in compact form
+- Avoids storing duplicate information
+- Shrinks file sizes by up to 90%
+
+## 🛠️ How to Use Diren
+
+### For Developers (JavaScript/TypeScript)
 
 ```javascript
-// Let Diren choose the best model automatically
+// Instead of calling AI APIs directly, just use Diren's URLs
+const response = await fetch('http://localhost:3000/v1/chat/completions', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    model: 'gpt-3.5-turbo',
+    messages: [{ role: 'user', content: 'What is machine learning?' }]
+  })
+});
+
+// The response includes helpful headers:
+console.log(response.headers.get('X-Diren-Cache')); // 'HIT' or 'MISS'
+console.log(response.headers.get('X-Diren-Provider')); // Which provider was used
+console.log(response.headers.get('X-Diren-Cost')); // How much it cost
+```
+
+### Smart Routing with Diren
+
+Let Diren automatically choose the best AI model:
+
+```javascript
+// Let Diren decide the best model for your request
 const response = await fetch('http://localhost:3000/v1/smart/chat/completions', {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',
-    'X-Diren-Quality': 'high',           // Quality preference
-    'X-Diren-Max-Cost': '0.05',         // Cost constraint  
-    'X-Diren-Capabilities': 'code'      // Required capabilities
+    'X-Diren-Smart-Routing': 'true',
+    'X-Diren-Quality': 'high'
   },
   body: JSON.stringify({
-    messages: [{ role: 'user', content: 'Optimize this SQL query for performance' }]
+    messages: [{ role: 'user', content: 'Write a Python function to sort arrays' }]
   })
 });
 
-// Check routing decisions
-console.log(response.headers.get('X-Diren-Selected-Provider')); // "deepseek" 
-console.log(response.headers.get('X-Diren-Cache-Source'));      // "semantic"
-console.log(response.headers.get('X-Diren-Reasoning'));         // Selection reasoning
+// Diren automatically picks the best provider/model
+// and adds helpful headers about the routing decision
 ```
 
-### Enhanced Caching
-Get better cache hits with semantic understanding:
+## 📊 What Makes Diren Special
 
-```javascript
-// These will all hit the same semantic cache:
-// "What is JavaScript?" 
-// "Explain JavaScript"
-// "Tell me about JS"
-// "JavaScript programming language explanation"
-```
+### 🤖 AI Intelligence
+- **Understands meaning**, not just keywords
+- **Semantic caching** that recognizes similar concepts
+- **Context-aware** responses based on conversation
+- **Intent detection** for better matching
 
-##  Monitor Your Savings
+### ⚡ Speed & Performance  
+- **Sub-millisecond** cache retrieval
+- **Smart indexing** for instant searches
+- **Concurrent request** handling
+- **Adaptive compression** for efficiency
+
+### 🛡️ Enterprise Ready
+- **20+ AI providers** supported
+- **Universal API compatibility**
+- **Real-time monitoring**
+- **Beautiful web dashboard**
+- **Tool auto-configuration**
+
+## 🔧 Local Development
+
+### Setup for Development
 
 ```bash
-# Intelligence and performance stats
-diren smart memory    # Fast memory statistics
-diren smart models    # Model pool status  
-diren smart benchmark # Run performance tests
+# Clone the repository
+git clone https://github.com/diren-ai/diren.git
+cd diren
 
-# Traditional monitoring
-diren stats          # Usage statistics
-diren dashboard      # Open web interface
+# Install dependencies
+npm install
 
-# API monitoring  
-curl http://localhost:3000/api/analytics  # Detailed analytics
-curl http://localhost:3000/api/models     # Model performance
-curl http://localhost:3000/api/memory     # Memory statistics
+# Build the project
+npm run build
+
+# Start development server
+npm run dev
+
+# Or run tests
+npm test
 ```
 
-##  Supported Providers
+### Running Tests
 
-### Major Commercial Providers
-- **OpenAI** (GPT-3.5, GPT-4, etc.)
-- **Anthropic** (Claude 3 Opus, Sonnet, Haiku)
-- **Google AI** (Gemini Pro, Gemini Ultra)
-- **Groq** (Mixtral, Llama 2)
-- **Perplexity AI** (PPLX models)
-- **DeepSeek** (DeepSeek Chat)
+```bash
+# Run all tests
+npm run test
 
-### AI Coding Tools
-- **Cursor IDE** (AI-powered code editor)
-- **Claude CLI** (Official Anthropic CLI)
-- **Continue** (VS Code extension)
-- **Aider** (AI coding assistant)
+# Run specific test types
+npm run test:unit        # Unit tests only
+npm run test:integration # Integration tests only
+npm run test:e2e        # End-to-end tests only
 
-### Local & Open Source
-- **Ollama** (Local LLM server)
-- **llama.cpp** (Local C++ implementation)
-
-### Router Services
-- **OpenRouter** (Multi-provider router)
-- **TokenRouter** (Cost-optimized routing)
-
-### Enterprise & Cloud
-- **Azure OpenAI** (Microsoft Azure)
-- **Grok (X.AI)** (Elon Musk's X AI)
-- **Alibaba DashScope** (Chinese market)
-
-### Add Custom Providers
-Easily add any REST API provider through the web dashboard or CLI.
-
-##  Tool Integrations
-
-### Claude CLI Configuration
-Diren automatically configures Claude CLI with this settings file at `~/.claude/settings.json`:
-```json
-{
-  "hasCompletedOnboarding": true,
-  "env": {
-    "ANTHROPIC_BASE_URL": "http://127.0.0.1:3000/v1",
-    "ANTHROPIC_AUTH_TOKEN": "diren-managed",
-    "ANTHROPIC_DEFAULT_FABLE_MODEL": "claude-3-haiku-20240307",
-    "ANTHROPIC_DEFAULT_OPUS_MODEL": "claude-3-opus-20240229",
-    "ANTHROPIC_DEFAULT_SONNET_MODEL": "claude-3-sonnet-20240229",
-    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "claude-3-haiku-20240307",
-    "CLAUDE_CODE_MAX_CONTEXT_TOKENS": "998000"
-  }
-}
+# Run comprehensive test suite
+npm run test:all
 ```
 
-### Cursor IDE Integration
-Auto-configures Cursor to use Diren proxy for all AI requests.
+### Testing Locally
 
-### Continue VS Code Extension
-Sets up Continue extension to route through Diren for cost optimization.
-
-##  Architecture
-
-Diren works as an intelligent proxy with advanced AI capabilities:
-
-### Intelligence Layer
-1. **Semantic Analysis** - Understands request meaning and intent using NLP techniques
-2. **Fast Memory Store** - In-memory cache with semantic indexing and sub-ms retrieval  
-3. **Model Pool** - Intelligent routing based on capabilities, cost, and performance
-4. **Learning System** - Continuously improves based on usage patterns and outcomes
-
-### Caching Layer  
-5. **Multi-Level Cache** - Exact → Semantic → Contextual → Memory matching
-6. **Smart Compression** - 90%+ storage reduction with adaptive compression
-7. **Performance Optimization** - Intelligent eviction and cleanup policies
-
-### Proxy Layer
-8. **Request Interception** - Captures and analyzes all API requests
-9. **Provider Management** - Routes to 20+ AI providers seamlessly
-10. **Response Enhancement** - Adds performance metadata and caching headers
-
-### Analytics Layer
-11. **Cost Tracking** - Real-time savings calculation and provider comparison
-12. **Performance Monitoring** - Latency, success rates, and quality metrics
-13. **Intelligence Metrics** - Cache hit rates, routing accuracy, and learning progress
-
-##  Project Structure
-
-```
-diren/
-├── src/
-│   ├── cache/              # Advanced caching with compression
-│   ├── config/             # Multi-provider configuration
-│   ├── proxy/              # Universal proxy handlers
-│   ├── dashboard/          # Web dashboard server
-│   ├── analytics/          # Cost tracking and insights
-│   ├── index.ts            # Main server with dashboard
-│   └── cli.ts              # Enhanced CLI
-├── dashboard/dist/         # Web dashboard frontend
-├── examples/               # Integration guides
-└── scripts/                # Setup and utility scripts
+1. **Start the Diren server** in one terminal:
+```bash
+diren start --port 3001
 ```
 
-##  Configuration
+2. **Run tests** in another terminal:
+```bash
+npm run test:all -- --testPathPattern=system.e2e
+```
 
-All configuration is stored locally in `~/.diren/`:
-- `config.json`: Encrypted API keys and provider settings
-- `cache.db`: SQLite database with compressed responses
-- `analytics.json`: Usage statistics and cost tracking
+3. **Check the dashboard** at `http://localhost:3001/dashboard`
 
-##  Web Dashboard Features
+## 📦 Publishing to NPM
 
-- **Real-time cost tracking** with beautiful visualizations
-- **Provider management** with one-click enable/disable
-- **Tool configuration** with automated setup
-- **Cache analytics** with compression statistics
-- **Custom provider builder** for any REST API
-- **Cost savings breakdown** by provider and time period
+### Preparation Steps
 
-##  Contributing
+1. **Create a GitHub account** if you don't have one
 
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature-name`
-3. Make your changes and add tests
-4. Run tests: `npm test`
-5. Submit a pull request
+2. **Fork this repository**:
+   - Go to https://github.com/diren-ai/diren
+   - Click "Fork" in the top-right corner
 
-##  License
+3. **Create a new branch** for your changes:
+```bash
+git checkout -b feature/your-name-improvement
+```
 
-MIT License - See LICENSE file for details
+4. **Update package.json** with your changes
 
----
+5. **Commit your changes**:
+```bash
+git add .
+git commit -m "Add [your feature] improvements"
+```
 
-** Save up on AI API costs without changing your code. Get started with Diren today!**
+### Publishing Process
 
-** Visit the web dashboard at http://localhost:3000/dashboard after starting the server.**
+1. **Push to your fork**:
+```bash
+git push origin feature/your-name-improvement
+```
+
+2. **Create a Pull Request (PR)**:
+   - Go to your forked repository
+   - Click "Compare & pull request"
+   - Fill in a descriptive PR message
+
+3. **Wait for review**: Maintainers will review and merge your changes
+
+4. **Automated publishing**: When merged to main, GitHub Actions will automatically publish to NPM!
+
+### Publishing to NPM Directly
+
+For direct NPM publishing, you'll need:
+
+1. **NPM account** with proper permissions
+2. **Maintainer access** to the package
+3. **Security audit** completed
+
+### Local Testing Before Publishing
+
+Before publishing, always run:
+
+```bash
+# 1. Build the project
+npm run build
+
+# 2. Run all tests
+npm test
+
+# 3. Check test coverage
+npm run test:coverage
+
+# 4. Run performance benchmarks
+npm run benchmark
+
+# 5. Run intelligence benchmarks
+npm run intelligence-benchmark
+```
+
+## 🛠️ Troubleshooting
+
+### Common Issues
+
+**Issue: "Command not found: diren"**
+```bash
+# On Windows, you might need to restart your terminal
+# On Mac/Linux, try:
+export PATH=$PATH:/usr/local/bin
+```
+
+**Issue: Port already in use**
+```bash
+# Change the port
+diren start --port 3002
+
+# Or stop existing process
+lsof -ti:3000 | xargs kill -9
+```
+
+**Issue: API configuration problems**
+```bash
+# Check your configuration
+diren config list
+
+# Set a provider
+diren config set openai --key YOUR_API_KEY
+```
+
+### Getting Help
+
+- **GitHub Issues**: Report bugs or request features
+- **Documentation**: Check the `/docs` folder for detailed guides
+- **Community**: Join discussions in the repository
+
+## ✨ What's Next?
+
+Diren is constantly evolving! Here's what's coming:
+
+- **Advanced semantic matching** with deep learning
+- **Real-time model performance tracking**
+- **Multi-language support**
+- **Cloud deployment options**
+- **Plugin architecture** for custom providers
+
+## 📝 Contribution Guidelines
+
+We welcome contributions! Please:
+
+1. **Follow the existing code style**
+2. **Add tests** for new functionality
+3. **Write clear documentation**
+4. **Update this README** with new features
+5. **Run tests** before submitting
+
+## 🔄 License
+
+MIT License - Feel free to use, modify, and share!
+
+## 💬 Community
+
+- **GitHub**: https://github.com/diren-ai/diren
+- **Discussions**: Feature requests and feedback
+- **Issues**: Bug reports and questions
+
+## 🎉 Getting Started Today!
+
+```bash
+# One command to save money on AI APIs!
+npm install -g diren
+
+# Configure and start
+diren config set openai --key sk-your-key
+diren start --dashboard
+
+# Open dashboard and watch the savings!
+```
+
+**Remember**: Every cached request saves money, every smart routing choice saves money. **Start using Diren today and keep more of your hard-earned money!** 💰🚀

@@ -591,4 +591,25 @@ export class ModelPool extends EventEmitter {
     }
     this.removeAllListeners();
   }
+
+  public reset(): void {
+    // Reset all model profiles to default state
+    for (const profile of this.models.values()) {
+      profile.availability.isOnline = false;
+      profile.availability.lastChecked = 0;
+      profile.availability.errorRate = 0;
+      profile.availability.rateLimitStatus = 'ok';
+      profile.performance.averageLatency = this.estimateLatency(profile.provider);
+      profile.performance.successRate = 0.95;
+      profile.performance.costPer1kTokens = profile.usage.totalCost > 0 && profile.usage.totalTokens > 0
+        ? (profile.usage.totalCost / profile.usage.totalTokens) * 1000
+        : 0;
+      profile.usage = {
+        totalRequests: 0,
+        totalTokens: 0,
+        totalCost: 0,
+        lastUsed: 0
+      };
+    }
+  }
 }

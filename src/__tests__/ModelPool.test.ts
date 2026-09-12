@@ -9,15 +9,16 @@ describe('ModelPool', () => {
   beforeEach(async () => {
     modelPool = ModelPool.getInstance();
     configManager = new ConfigManager();
-    
+
     // Setup test providers
     await configManager.setApiKey('openai', 'test-key', { enabled: true });
     await configManager.setApiKey('anthropic', 'test-key', { enabled: true });
     await configManager.setApiKey('groq', 'test-key', { enabled: true });
     await configManager.setApiKey('deepseek', 'test-key', { enabled: true });
-    
-    // Initialize model availability
+
+    // Initialize model availability and reset state
     await modelPool.checkModelAvailability();
+    await modelPool.reset();
   });
 
   describe('model initialization', () => {
@@ -56,11 +57,26 @@ describe('ModelPool', () => {
       };
 
       const result = await modelPool.routeRequest(request);
-      
+
       expect(result.selectedModel).toBeDefined();
       expect(result.estimatedCost).toBeLessThanOrEqual(0.01);
       expect(result.confidence).toBeGreaterThan(0);
-      expect(result.reasoning).toHaveLength.greaterThan(0);
+      expect(Array.isArray(result.reasoning)).toBe(true);
+      expect(result.reasoning.length).toBeGreaterThan(0);
+    });
+
+    it('should provide reasoning for selection', async () => {
+      const request: RoutingRequest = {
+        text: 'Optimize database performance',
+        intent: 'optimize',
+        complexity: 0.8,
+        preferredQuality: 'high'
+      };
+
+      const result = await modelPool.routeRequest(request);
+
+      expect(result.reasoning.length).toBeGreaterThan(0);
+      expect(result.reasoning[0]).toMatch(/Selected for|Cost efficient|Fast response|Matches|Local processing|Large context/);
     });
 
     it('should route code generation requests to specialized models', async () => {
@@ -169,8 +185,8 @@ describe('ModelPool', () => {
       };
 
       const result = await modelPool.routeRequest(request);
-      
-      expect(result.reasoning).toHaveLength.greaterThan(0);
+
+      expect(result.reasoning.length).toBeGreaterThan(0);
       expect(result.reasoning[0]).toMatch(/Selected for|Cost efficient|Fast response|Matches|Local processing|Large context/);
     });
   });
